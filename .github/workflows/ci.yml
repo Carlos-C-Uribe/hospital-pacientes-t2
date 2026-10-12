@@ -7,7 +7,7 @@ on:
 permissions:
   contents: read
 env:
-  DEMO_CI_FAILURE: 'true'
+  DEMO_CI_FAILURE: 'false'
 jobs:
   compilar-probar:
     runs-on: ubuntu-latest

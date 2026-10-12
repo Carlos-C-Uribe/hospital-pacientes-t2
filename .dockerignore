@@ -1,0 +1,10 @@
+**/target
+.git
+.vs
+.idea
+.vscode
+.env
+.env.*
+evidencias
+*.zip
+.bootstrap

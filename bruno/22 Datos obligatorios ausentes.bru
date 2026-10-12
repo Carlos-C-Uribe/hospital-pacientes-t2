@@ -1,0 +1,25 @@
+meta {
+  name: 22 Datos obligatorios ausentes
+  type: http
+  seq: 22
+}
+
+post {
+  url: {{baseUrl}}/api/citas
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {}
+}
+
+tests {
+  test("HTTP 400", function () {
+    expect(res.getStatus()).to.equal(400);
+  });
+}

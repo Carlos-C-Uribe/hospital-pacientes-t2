@@ -1,0 +1,51 @@
+meta {
+  name: 01 Crear paciente
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/pacientes
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "tipoDocumento": "DEMO",
+    "numeroDocumento": "{{documento}}",
+    "nombres": "Paciente",
+    "apellidos": "Ficticio",
+    "fechaNacimiento": "2000-01-01",
+    "telefono": "DEMO-0001",
+    "correo": "prueba@example.invalid",
+    "direccion": "Direccion de prueba",
+    "estado": "ACTIVO"
+  }
+}
+
+script:pre-request {
+  const next = new Date();
+  next.setUTCDate(next.getUTCDate() + 3);
+  while (next.getUTCDay() === 0) next.setUTCDate(next.getUTCDate() + 1);
+  const following = new Date(next);
+  following.setUTCDate(following.getUTCDate() + 7);
+  bru.setVar("documento", "DEMO-" + Date.now().toString(36).toUpperCase() + Math.random().toString(36).slice(2, 8).toUpperCase());
+  bru.setVar("profesional", "DEMO-" + Date.now().toString(36).toUpperCase());
+  bru.setVar("fechaCita", next.toISOString().slice(0, 10) + "T10:00:00-05:00");
+  bru.setVar("fechaReprogramada", following.toISOString().slice(0, 10) + "T10:00:00-05:00");
+}
+
+script:post-response {
+  if (res.getStatus() === 201) bru.setVar("pacienteId", res.getBody().id);
+}
+
+tests {
+  test("HTTP 201", function () {
+    expect(res.getStatus()).to.equal(201);
+  });
+}

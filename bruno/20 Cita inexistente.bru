@@ -1,0 +1,17 @@
+meta {
+  name: 20 Cita inexistente
+  type: http
+  seq: 20
+}
+
+get {
+  url: {{baseUrl}}/api/citas/9223372036854775807
+  body: none
+  auth: none
+}
+
+tests {
+  test("HTTP 404", function () {
+    expect(res.getStatus()).to.equal(404);
+  });
+}

@@ -1,0 +1,101 @@
+name: hospital-pacientes
+x-app: &app
+  image: hospital-pacientes:local
+  build: .
+  restart: unless-stopped
+  healthcheck:
+    test: ["CMD-SHELL", "curl --fail --silent http://localhost:$${APP_PORT}/actuator/health > /dev/null"]
+    interval: 10s
+    timeout: 5s
+    retries: 20
+    start_period: 60s
+services:
+  postgres:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: hospital_pacientes
+      POSTGRES_USER: hospital_pacientes
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?Genere el archivo .env con Start.ps1}
+    volumes: ["postgres-data:/var/lib/postgresql/data"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U hospital_pacientes -d hospital_pacientes"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+  postgres-citas:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: hospital_citas
+      POSTGRES_USER: hospital_citas
+      POSTGRES_PASSWORD: ${CITAS_DB_PASSWORD:?Genere el archivo .env con Start.ps1}
+    volumes: ["citas-postgres-data:/var/lib/postgresql/data"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U hospital_citas -d hospital_citas"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+  rabbitmq:
+    image: rabbitmq:4-management
+    restart: unless-stopped
+    environment:
+      RABBITMQ_DEFAULT_USER: hospital
+      RABBITMQ_DEFAULT_PASS: ${RABBIT_PASSWORD:?Genere el archivo .env con Start.ps1}
+    ports: ["127.0.0.1:15672:15672"]
+    volumes: ["rabbit-data:/var/lib/rabbitmq"]
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 10s
+      retries: 20
+  eureka-server:
+    <<: *app
+    environment:
+      APP_MODULE: eureka-server
+      APP_PORT: "8761"
+    ports: ["127.0.0.1:8761:8761"]
+  pacientes-service:
+    <<: *app
+    environment:
+      APP_MODULE: pacientes-service
+      APP_PORT: "8081"
+      DB_HOST: postgres
+      DB_PASSWORD: ${DB_PASSWORD}
+      RABBIT_HOST: rabbitmq
+      RABBIT_PASSWORD: ${RABBIT_PASSWORD}
+      EUREKA_URL: http://eureka-server:8761/eureka/
+    depends_on:
+      postgres: {condition: service_healthy}
+      rabbitmq: {condition: service_healthy}
+      eureka-server: {condition: service_healthy}
+  citas-service:
+    <<: *app
+    environment:
+      APP_MODULE: citas-service
+      APP_PORT: "8082"
+      DB_HOST: postgres-citas
+      CITAS_DB_PASSWORD: ${CITAS_DB_PASSWORD}
+      RABBIT_HOST: rabbitmq
+      RABBIT_PASSWORD: ${RABBIT_PASSWORD}
+      EUREKA_URL: http://eureka-server:8761/eureka/
+    depends_on:
+      postgres-citas: {condition: service_healthy}
+      pacientes-service: {condition: service_healthy}
+      rabbitmq: {condition: service_healthy}
+      eureka-server: {condition: service_healthy}
+  api-gateway:
+    <<: *app
+    environment:
+      APP_MODULE: api-gateway
+      APP_PORT: "8080"
+      EUREKA_URL: http://eureka-server:8761/eureka/
+    ports: ["127.0.0.1:8080:8080"]
+    depends_on:
+      pacientes-service: {condition: service_healthy}
+      citas-service: {condition: service_healthy}
+      eureka-server: {condition: service_healthy}
+volumes:
+  postgres-data:
+  citas-postgres-data:
+  rabbit-data:

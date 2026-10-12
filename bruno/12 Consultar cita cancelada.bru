@@ -1,0 +1,20 @@
+meta {
+  name: 12 Consultar cita cancelada
+  type: http
+  seq: 12
+}
+
+get {
+  url: {{baseUrl}}/api/citas/{{citaId}}
+  body: none
+  auth: none
+}
+
+tests {
+  test("HTTP 200", function () {
+    expect(res.getStatus()).to.equal(200);
+  });
+  test("Estado CANCELADA", function () {
+    expect(res.getBody().estado).to.equal("CANCELADA");
+  });
+}

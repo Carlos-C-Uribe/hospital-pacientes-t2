@@ -1,0 +1,17 @@
+meta {
+  name: 17 Consultar paciente eliminado
+  type: http
+  seq: 17
+}
+
+get {
+  url: {{baseUrl}}/api/pacientes/{{pacienteId}}
+  body: none
+  auth: none
+}
+
+tests {
+  test("HTTP 404", function () {
+    expect(res.getStatus()).to.equal(404);
+  });
+}

@@ -1,0 +1,17 @@
+meta {
+  name: 11 Cancelar cita
+  type: http
+  seq: 11
+}
+
+delete {
+  url: {{baseUrl}}/api/citas/{{citaId}}
+  body: none
+  auth: none
+}
+
+tests {
+  test("HTTP 204", function () {
+    expect(res.getStatus()).to.equal(204);
+  });
+}

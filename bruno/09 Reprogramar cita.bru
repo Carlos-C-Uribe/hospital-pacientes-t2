@@ -1,0 +1,33 @@
+meta {
+  name: 09 Reprogramar cita
+  type: http
+  seq: 9
+}
+
+put {
+  url: {{baseUrl}}/api/citas/{{citaId}}
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "especialidad": "Medicina general",
+    "fechaHora": "{{fechaReprogramada}}",
+    "profesionalCodigo": "{{profesional}}",
+    "motivo": "Reprogramacion administrativa ficticia"
+  }
+}
+
+tests {
+  test("HTTP 200", function () {
+    expect(res.getStatus()).to.equal(200);
+  });
+  test("Estado PENDIENTE", function () {
+    expect(res.getBody().estado).to.equal("PENDIENTE");
+  });
+}

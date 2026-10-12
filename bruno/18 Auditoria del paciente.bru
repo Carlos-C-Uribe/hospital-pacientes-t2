@@ -1,0 +1,22 @@
+meta {
+  name: 18 Auditoria del paciente
+  type: http
+  seq: 18
+}
+
+get {
+  url: {{baseUrl}}/api/pacientes/{{pacienteId}}/eventos
+  body: none
+  auth: none
+}
+
+tests {
+  test("HTTP 200", function () {
+    expect(res.getStatus()).to.equal(200);
+  });
+}
+
+docs {
+  RabbitMQ procesa eventos de forma asincrona. Si la lista aun esta vacia, espere unos segundos y repita Send.
+  Para demostrar consumo, observe tipo, origen y fechaConsumo. Consulte docs/bruno.md.
+}

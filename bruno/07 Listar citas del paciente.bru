@@ -1,0 +1,17 @@
+meta {
+  name: 07 Listar citas del paciente
+  type: http
+  seq: 7
+}
+
+get {
+  url: {{baseUrl}}/api/citas?pacienteId={{pacienteId}}&page=0&size=20
+  body: none
+  auth: none
+}
+
+tests {
+  test("HTTP 200", function () {
+    expect(res.getStatus()).to.equal(200);
+  });
+}

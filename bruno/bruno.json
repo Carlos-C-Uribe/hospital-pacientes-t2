@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "Hospital Vida Salud - Pacientes y Citas",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}

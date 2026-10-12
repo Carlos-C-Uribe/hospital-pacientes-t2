@@ -1,0 +1,38 @@
+meta {
+  name: 05 Crear cita
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{baseUrl}}/api/citas
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "pacienteId": {{pacienteId}},
+    "especialidad": "Medicina general",
+    "fechaHora": "{{fechaCita}}",
+    "profesionalCodigo": "{{profesional}}",
+    "motivo": "Reserva administrativa ficticia"
+  }
+}
+
+script:post-response {
+  if (res.getStatus() === 201) bru.setVar("citaId", res.getBody().id);
+}
+
+tests {
+  test("HTTP 201", function () {
+    expect(res.getStatus()).to.equal(201);
+  });
+  test("Estado PENDIENTE", function () {
+    expect(res.getBody().estado).to.equal("PENDIENTE");
+  });
+}

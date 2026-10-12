@@ -1,0 +1,17 @@
+meta {
+  name: 06 Consultar cita
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{baseUrl}}/api/citas/{{citaId}}
+  body: none
+  auth: none
+}
+
+tests {
+  test("HTTP 200", function () {
+    expect(res.getStatus()).to.equal(200);
+  });
+}

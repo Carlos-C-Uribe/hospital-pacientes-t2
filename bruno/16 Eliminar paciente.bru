@@ -1,0 +1,17 @@
+meta {
+  name: 16 Eliminar paciente
+  type: http
+  seq: 16
+}
+
+delete {
+  url: {{baseUrl}}/api/pacientes/{{pacienteId}}
+  body: none
+  auth: none
+}
+
+tests {
+  test("HTTP 204", function () {
+    expect(res.getStatus()).to.equal(204);
+  });
+}

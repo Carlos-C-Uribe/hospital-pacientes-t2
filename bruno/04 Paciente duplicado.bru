@@ -1,0 +1,35 @@
+meta {
+  name: 04 Paciente duplicado
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/api/pacientes
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "tipoDocumento": "DEMO",
+    "numeroDocumento": "{{documento}}",
+    "nombres": "Paciente",
+    "apellidos": "Ficticio",
+    "fechaNacimiento": "2000-01-01",
+    "telefono": "DEMO-0001",
+    "correo": "prueba@example.invalid",
+    "direccion": "Direccion de prueba",
+    "estado": "ACTIVO"
+  }
+}
+
+tests {
+  test("HTTP 409", function () {
+    expect(res.getStatus()).to.equal(409);
+  });
+}

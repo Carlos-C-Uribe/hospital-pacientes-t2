@@ -1,0 +1,27 @@
+meta {
+  name: 13 Confirmar cancelada es invalido
+  type: http
+  seq: 13
+}
+
+patch {
+  url: {{baseUrl}}/api/citas/{{citaId}}/estado
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "estado": "CONFIRMADA"
+  }
+}
+
+tests {
+  test("HTTP 409", function () {
+    expect(res.getStatus()).to.equal(409);
+  });
+}

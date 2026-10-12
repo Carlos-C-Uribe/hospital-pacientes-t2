@@ -1,0 +1,94 @@
+@base = http://localhost:8080
+@pacienteId = 1
+@citaId = 1
+# Sustituya los ID por los retornados. Use fechas futuras de lunes a sabado, UTC-5.
+
+### Crear paciente
+POST {{base}}/api/pacientes
+Content-Type: application/json
+
+{
+ "tipoDocumento": "DEMO",
+ "numeroDocumento": "DEMO-HTTP001",
+ "nombres": "Paciente",
+ "apellidos": "Ficticio",
+ "fechaNacimiento": "2000-01-01",
+ "telefono": "DEMO-0001",
+ "correo": "prueba@example.invalid",
+ "direccion": "Direccion de prueba",
+ "estado": "ACTIVO"
+}
+
+### Consultar paciente
+GET {{base}}/api/pacientes/{{pacienteId}}
+
+### Listar pacientes
+GET {{base}}/api/pacientes?page=0&size=20
+
+### Crear cita. Cambie fechaHora por una fecha futura valida.
+POST {{base}}/api/citas
+Content-Type: application/json
+
+{
+ "pacienteId": {{pacienteId}},
+ "especialidad": "Medicina general",
+ "fechaHora": "2027-01-04T10:00:00-05:00",
+ "profesionalCodigo": "DEMO-MEDICO01",
+ "motivo": "Reserva administrativa ficticia"
+}
+
+### Consultar cita
+GET {{base}}/api/citas/{{citaId}}
+
+### Listar citas filtradas
+GET {{base}}/api/citas?pacienteId={{pacienteId}}&estado=PENDIENTE&page=0&size=20
+
+### Confirmar cita
+PATCH {{base}}/api/citas/{{citaId}}/estado
+Content-Type: application/json
+
+{"estado":"CONFIRMADA"}
+
+### Reprogramar (retorna PENDIENTE)
+PUT {{base}}/api/citas/{{citaId}}
+Content-Type: application/json
+
+{
+ "especialidad": "Medicina general",
+ "fechaHora": "2027-01-05T10:00:00-05:00",
+ "profesionalCodigo": "DEMO-MEDICO01",
+ "motivo": "Reprogramacion administrativa"
+}
+
+### Cancelar sin borrar
+DELETE {{base}}/api/citas/{{citaId}}
+
+### Confirmar cancelada debe devolver 409
+PATCH {{base}}/api/citas/{{citaId}}/estado
+Content-Type: application/json
+
+{"estado":"CONFIRMADA"}
+
+### Eventos recibidos por Pacientes desde RabbitMQ
+GET {{base}}/api/pacientes/{{pacienteId}}/eventos-citas
+
+### Actualizar paciente
+PUT {{base}}/api/pacientes/{{pacienteId}}
+Content-Type: application/json
+
+{
+ "tipoDocumento": "DEMO",
+ "numeroDocumento": "DEMO-HTTP001",
+ "nombres": "Paciente Actualizado",
+ "apellidos": "Ficticio",
+ "fechaNacimiento": "2000-01-01",
+ "telefono": "DEMO-0002",
+ "correo": "actualizado@example.invalid",
+ "estado": "INACTIVO"
+}
+
+### Eliminar paciente
+DELETE {{base}}/api/pacientes/{{pacienteId}}
+
+### Las auditorias siguen consultables
+GET {{base}}/api/pacientes/{{pacienteId}}/eventos
